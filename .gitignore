@@ -44,3 +44,4 @@ htmlcov/
 *.joblib
 # Allow production ML models in saved_models directory
 !backend/ml/saved_models/*.joblib
+backend/database.db

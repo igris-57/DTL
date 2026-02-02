@@ -86,6 +86,55 @@ def map_form_to_ml_features(data: SimplifiedAssessmentRequest) -> List[float]:
         application_mode
     ]
 
+def filter_risk_factors_by_level(risk_factors: List[RiskFactor], risk_level: str) -> List[RiskFactor]:
+    """
+    Filter and adjust risk factors to be contextually appropriate for the overall risk level.
+
+    - Low Risk (0-34): Show max 2 factors with "low" or "medium" impact only
+    - Medium Risk (35-59): Show max 4 factors with "medium" or "high" impact
+    - High Risk (60+): Show all factors with "high" impact
+    """
+    if risk_level == 'low':
+        # For low risk, downgrade all impacts and show minimal factors
+        adjusted_factors = []
+        for factor in risk_factors[:2]:  # Max 2 factors
+            # Downgrade impact levels
+            if factor.impact == 'high':
+                adjusted_impact = 'low'
+            else:
+                adjusted_impact = 'low'
+
+            adjusted_factors.append(RiskFactor(
+                category=factor.category,
+                factor=factor.factor,
+                impact=adjusted_impact,
+                description=factor.description
+            ))
+        return adjusted_factors
+
+    elif risk_level == 'medium':
+        # For medium risk, show moderate number with medium/high impact
+        adjusted_factors = []
+        for factor in risk_factors[:4]:  # Max 4 factors
+            # Keep high as high, but prefer medium
+            if factor.impact == 'high':
+                adjusted_impact = 'medium' if len(adjusted_factors) < 2 else 'high'
+            else:
+                adjusted_impact = 'medium'
+
+            adjusted_factors.append(RiskFactor(
+                category=factor.category,
+                factor=factor.factor,
+                impact=adjusted_impact,
+                description=factor.description
+            ))
+        return adjusted_factors
+
+    else:  # high risk
+        # For high risk, show all factors with their original impact
+        return risk_factors
+
+
 def calculate_fallback_risk(data: SimplifiedAssessmentRequest) -> PredictionResponse:
     """Fallback prediction when ML model is not available"""
     risk_score = 0
@@ -181,6 +230,9 @@ def calculate_fallback_risk(data: SimplifiedAssessmentRequest) -> PredictionResp
             impact="high",
             description="Active consideration of withdrawal indicates elevated risk"
         ))
+
+    # Filter risk factors based on overall risk level
+    risk_factors = filter_risk_factors_by_level(risk_factors, risk_level)
 
     # Generate recommendations
     recommendations = []
@@ -315,7 +367,7 @@ async def predict_simplified(data: SimplifiedAssessmentRequest, db: AsyncSession
                         impact="medium",
                         description="Working full-time while studying significantly increases time pressure"
                     ))
-                
+
                 # Generate recommendations
                 recommendations = []
                 if risk_level == 'high':
@@ -461,7 +513,10 @@ async def predict_simplified(data: SimplifiedAssessmentRequest, db: AsyncSession
                         if reason in withdrawal_reason_map:
                             recommendations.append(withdrawal_reason_map[reason]['recommendation'])
                             risk_factors.append(withdrawal_reason_map[reason]['risk_factor'])
-                
+
+                # Filter risk factors based on overall risk level (after all factors collected)
+                risk_factors = filter_risk_factors_by_level(risk_factors, risk_level)
+
                 # Services used - if no services used, add recommendation
                 if not data.services_used or len(data.services_used) == 0:
                     recommendations.append(Recommendation(

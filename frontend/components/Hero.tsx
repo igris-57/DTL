@@ -94,7 +94,8 @@ export default function Hero() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.4 }}
-                className="col-span-2 p-6 rounded-3xl relative overflow-hidden"
+                whileHover={{ y: -5 }}
+                className="col-span-2 p-6 rounded-3xl relative overflow-hidden cursor-pointer transition-all hover:shadow-xl"
                 style={{ background: 'linear-gradient(135deg, #fec8a0 0%, #f8a4b8 50%, #e8b4d0 100%)' }}
               >
                 <div className="flex items-start justify-between">
