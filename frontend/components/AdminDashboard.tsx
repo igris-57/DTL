@@ -1,6 +1,7 @@
 // frontend/components/AdminDashboard.tsx
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Users, AlertTriangle, TrendingUp, Activity,
@@ -11,32 +12,16 @@ import {
 import {
   ResponsiveContainer, Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip
 } from 'recharts';
-
-const focusData = [
-  { week: 'W1', highRisk: 20, lowRisk: 65 },
-  { week: 'W2', highRisk: 25, lowRisk: 60 },
-  { week: 'W3', highRisk: 18, lowRisk: 70 },
-  { week: 'W4', highRisk: 30, lowRisk: 55 },
-  { week: 'W5', highRisk: 22, lowRisk: 68 },
-  { week: 'W6', highRisk: 28, lowRisk: 58 },
-  { week: 'W7', highRisk: 15, lowRisk: 75 },
-  { week: 'W8', highRisk: 35, lowRisk: 50 },
-];
-
-const riskFactors = [
-  { name: 'Academic Stress', percentage: 71, trend: 'down' },
-  { name: 'Financial Issues', percentage: 92, trend: 'up' },
-  { name: 'Mental Health', percentage: 33, trend: 'down' },
-  { name: 'Low Attendance', percentage: 56, trend: 'up' },
-  { name: 'Career Misalign', percentage: 79, trend: 'up' },
-];
-
-const recentAssessments = [
-  { id: 1, name: 'Student Assessment', date: 'Tue, 11 Jul', time: '08:15 am', risk: 'high', type: 'Academic Review' },
-  { id: 2, name: 'New Enrollment', date: 'Tue, 11 Jul', time: '09:30 pm', risk: 'low', type: 'Onboarding' },
-  { id: 3, name: 'Follow-up Session', date: 'Tue, 12 Jul', time: '02:30 pm', risk: 'medium', type: 'Counseling' },
-  { id: 4, name: 'Risk Review', date: 'Tue, 15 Jul', time: '04:00 pm', risk: 'high', type: 'Intervention' },
-];
+import {
+  getDashboardStats,
+  getRiskTrends,
+  getTopRiskFactors,
+  getRecentAssessments,
+  type DashboardStats,
+  type TrendDataPoint,
+  type RiskFactorSummary,
+  type AssessmentSummary
+} from '@/lib/api';
 
 const interventionTypes = [
   { name: 'Counseling', icon: Brain, color: 'bg-purple-100 text-purple-600' },
@@ -46,6 +31,78 @@ const interventionTypes = [
 ];
 
 export default function AdminDashboard() {
+  // State management
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [trends, setTrends] = useState<TrendDataPoint[]>([]);
+  const [riskFactors, setRiskFactors] = useState<RiskFactorSummary[]>([]);
+  const [recentAssessments, setRecentAssessments] = useState<AssessmentSummary[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch dashboard data on mount
+  useEffect(() => {
+    async function fetchDashboardData() {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const [statsData, trendsData, riskFactorsData, assessmentsData] = await Promise.all([
+          getDashboardStats(),
+          getRiskTrends('weekly'),
+          getTopRiskFactors(5),
+          getRecentAssessments(4),
+        ]);
+
+        setStats(statsData);
+        setTrends(trendsData);
+        setRiskFactors(riskFactorsData);
+        setRecentAssessments(assessmentsData);
+      } catch (err) {
+        console.error('Failed to fetch dashboard data:', err);
+        setError('Failed to load dashboard data. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchDashboardData();
+  }, []);
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#f0f4f8] pt-20 pb-8 px-4 lg:px-8 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 text-lg">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[#f0f4f8] pt-20 pb-8 px-4 lg:px-8 flex items-center justify-center">
+        <div className="bg-red-50 border border-red-200 rounded-2xl p-6 max-w-md">
+          <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+          <p className="text-red-700 text-center">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 w-full bg-red-500 text-white py-2 px-4 rounded-xl hover:bg-red-600 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Default values if data is missing
+  const totalStudents = stats?.totalAssessments || 0;
+  const highRiskPercentage = stats?.highRiskPercentage || 0;
+  const lowRiskPercentage = stats?.lowRiskPercentage || 0;
+  const mediumRiskPercentage = stats?.mediumRiskPercentage || 0;
   return (
     <div className="min-h-screen bg-[#f0f4f8] pt-20 pb-8 px-4 lg:px-8">
       <div className="max-w-[1600px] mx-auto">
@@ -118,21 +175,21 @@ export default function AdminDashboard() {
                 <div className="text-center">
                   <div className="flex items-center justify-center gap-1 text-blue-500">
                     <Users className="w-4 h-4" />
-                    <span className="font-semibold">373</span>
+                    <span className="font-semibold">{totalStudents}</span>
                   </div>
                   <p className="text-xs text-gray-500 mt-1">Students</p>
                 </div>
                 <div className="text-center">
                   <div className="flex items-center justify-center gap-1 text-green-500">
                     <TrendingUp className="w-4 h-4" />
-                    <span className="font-semibold">82%</span>
+                    <span className="font-semibold">{Math.round(lowRiskPercentage)}%</span>
                   </div>
                   <p className="text-xs text-gray-500 mt-1">Success</p>
                 </div>
                 <div className="text-center">
                   <div className="flex items-center justify-center gap-1 text-orange-500">
                     <AlertTriangle className="w-4 h-4" />
-                    <span className="font-semibold">45</span>
+                    <span className="font-semibold">{stats?.highRiskCount || 0}</span>
                   </div>
                   <p className="text-xs text-gray-500 mt-1">At Risk</p>
                 </div>
@@ -187,7 +244,7 @@ export default function AdminDashboard() {
                   </div>
                 </div>
                 <div className="mt-8">
-                  <span className="text-5xl font-bold text-white">12%</span>
+                  <span className="text-5xl font-bold text-white">{Math.round(highRiskPercentage)}%</span>
                   <p className="text-white/70 text-sm mt-1">of total students</p>
                 </div>
               </motion.div>
@@ -209,7 +266,7 @@ export default function AdminDashboard() {
                   </div>
                 </div>
                 <div className="mt-8">
-                  <span className="text-5xl font-bold text-gray-800">60%</span>
+                  <span className="text-5xl font-bold text-gray-800">{Math.round(lowRiskPercentage)}%</span>
                   <p className="text-gray-600/70 text-sm mt-1">of total students</p>
                 </div>
               </motion.div>
@@ -235,7 +292,7 @@ export default function AdminDashboard() {
 
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={focusData}>
+                  <AreaChart data={trends}>
                     <defs>
                       <linearGradient id="colorHigh" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="#f87171" stopOpacity={0.3}/>
@@ -291,7 +348,7 @@ export default function AdminDashboard() {
               </div>
 
               <div className="text-right mt-4">
-                <span className="text-4xl font-bold text-gray-800">28%</span>
+                <span className="text-4xl font-bold text-gray-800">{Math.round(mediumRiskPercentage)}%</span>
                 <p className="text-gray-500 text-sm">Medium Risk</p>
               </div>
             </motion.div>

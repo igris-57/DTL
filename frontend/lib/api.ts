@@ -132,3 +132,91 @@ export async function checkAPIHealth(): Promise<boolean> {
     return false;
   }
 }
+
+// ============================================================================
+// Admin Dashboard APIs
+// ============================================================================
+
+export interface DashboardStats {
+  totalAssessments: number;
+  highRiskCount: number;
+  mediumRiskCount: number;
+  lowRiskCount: number;
+  highRiskPercentage: number;
+  mediumRiskPercentage: number;
+  lowRiskPercentage: number;
+  averageRiskScore: number;
+}
+
+export interface TrendDataPoint {
+  week: string;
+  highRisk: number;
+  mediumRisk: number;
+  lowRisk: number;
+}
+
+export interface RiskFactorSummary {
+  name: string;
+  percentage: number;
+  trend: 'up' | 'down' | 'stable';
+}
+
+export interface AssessmentSummary {
+  id: number;
+  name: string;
+  date: string;
+  time: string;
+  risk: 'low' | 'medium' | 'high';
+  type: string;
+}
+
+export async function getDashboardStats(): Promise<DashboardStats> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/admin/dashboard/stats`);
+  if (!response.ok) throw new Error('Failed to fetch stats');
+  const data = await response.json();
+
+  // Transform snake_case to camelCase
+  return {
+    totalAssessments: data.total_assessments,
+    highRiskCount: data.high_risk_count,
+    mediumRiskCount: data.medium_risk_count,
+    lowRiskCount: data.low_risk_count,
+    highRiskPercentage: data.high_risk_percentage,
+    mediumRiskPercentage: data.medium_risk_percentage,
+    lowRiskPercentage: data.low_risk_percentage,
+    averageRiskScore: data.average_risk_score,
+  };
+}
+
+export async function getRiskTrends(period: string = 'weekly'): Promise<TrendDataPoint[]> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/admin/dashboard/trends?period=${period}`);
+  if (!response.ok) throw new Error('Failed to fetch trends');
+  const data = await response.json();
+
+  return data.data.map((d: any) => ({
+    week: d.week,
+    highRisk: d.high_risk,
+    mediumRisk: d.medium_risk,
+    lowRisk: d.low_risk,
+  }));
+}
+
+export async function getTopRiskFactors(limit: number = 5): Promise<RiskFactorSummary[]> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/admin/risk-factors?limit=${limit}`);
+  if (!response.ok) throw new Error('Failed to fetch risk factors');
+  const data = await response.json();
+  return data.factors;
+}
+
+export async function getRecentAssessments(limit: number = 10): Promise<AssessmentSummary[]> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/admin/recent-assessments?limit=${limit}`);
+  if (!response.ok) throw new Error('Failed to fetch assessments');
+  const data = await response.json();
+  return data.assessments;
+}
+
+export async function getRiskDistribution(): Promise<{ high: number; medium: number; low: number }> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/admin/risk-distribution`);
+  if (!response.ok) throw new Error('Failed to fetch distribution');
+  return response.json();
+}

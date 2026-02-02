@@ -64,8 +64,8 @@ export default function Hero() {
             {/* Stats */}
             <div className="flex gap-12">
               {[
-                { value: '85%', label: 'Model Accuracy' },
-                { value: '0.89', label: 'AUC-ROC Score' },
+                { value: '87.8%', label: 'Model Accuracy' },
+                { value: '0.9211', label: 'AUC-ROC Score' },
                 { value: '4.4K', label: 'Students Trained' },
               ].map((stat, i) => (
                 <motion.div

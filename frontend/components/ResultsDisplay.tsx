@@ -123,6 +123,7 @@ export default function ResultsDisplay() {
                     <div className="flex items-start gap-3">
                       <Badge
                         variant={factor.impact === 'high' ? 'destructive' : factor.impact === 'medium' ? 'default' : 'secondary'}
+                        className="capitalize"
                       >
                         {factor.impact}
                       </Badge>
@@ -166,7 +167,7 @@ export default function ResultsDisplay() {
 
                     <div className="flex items-center gap-2 mb-2">
                       <h4 className="font-semibold text-gray-900">{rec.title}</h4>
-                      <Badge variant={rec.urgency === 'immediate' ? 'destructive' : rec.urgency === 'soon' ? 'default' : 'secondary'}>
+                      <Badge variant={rec.urgency === 'immediate' ? 'destructive' : rec.urgency === 'soon' ? 'default' : 'secondary'} className="capitalize">
                         {rec.urgency}
                       </Badge>
                     </div>

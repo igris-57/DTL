@@ -46,7 +46,7 @@ export default function Footer() {
 
         <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm">
-            © 2024 Design Thinking Lab Project - RV College of Engineering
+            © 2026 Design Thinking Lab Project - RV College of Engineering
           </p>
           <p className="text-gray-400 text-sm mt-2 md:mt-0">
             Built with Next.js, FastAPI & Gradient Boosting ML

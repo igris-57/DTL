@@ -1,7 +1,10 @@
 # backend/app/routers/prediction.py
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.schemas import SimplifiedAssessmentRequest, PredictionResponse, RiskFactor, Recommendation, RawFeaturesRequest
 from app.models.ml_model import ml_model
+from app.database import get_db
+from app.repositories.prediction_repository import save_prediction
 from typing import List
 
 # NOTE: FEATURE_ORDER must match the order used during model training.
@@ -236,7 +239,7 @@ def calculate_fallback_risk(data: SimplifiedAssessmentRequest) -> PredictionResp
     )
 
 @router.post("/simplified", response_model=PredictionResponse)
-async def predict_simplified(data: SimplifiedAssessmentRequest):
+async def predict_simplified(data: SimplifiedAssessmentRequest, db: AsyncSession = Depends(get_db)):
     """
     Predict dropout risk based on simplified assessment.
     Uses ML model if available, falls back to heuristic otherwise.
@@ -476,8 +479,8 @@ async def predict_simplified(data: SimplifiedAssessmentRequest):
                         description="Continue engaging with campus resources and maintain your support network",
                         urgency="when-needed"
                     ))
-                
-                return PredictionResponse(
+
+                result = PredictionResponse(
                     risk_level=risk_level,
                     risk_score=risk_score,
                     dropout_probability=dropout_probability,
@@ -486,9 +489,24 @@ async def predict_simplified(data: SimplifiedAssessmentRequest):
                     recommendations=recommendations,
                     prediction_confidence=prediction_confidence
                 )
-        
+
+                # Save prediction to database (non-blocking, log errors)
+                try:
+                    await save_prediction(db, result, data, endpoint="simplified")
+                except Exception as db_error:
+                    print(f"Database save failed: {db_error}")
+
+                return result
+
         # Fall back to heuristic if ML model not available
         result = calculate_fallback_risk(data)
+
+        # Save fallback prediction to database
+        try:
+            await save_prediction(db, result, data, endpoint="simplified")
+        except Exception as db_error:
+            print(f"Database save failed: {db_error}")
+
         return result
 
     except Exception as e:
@@ -496,7 +514,7 @@ async def predict_simplified(data: SimplifiedAssessmentRequest):
 
 
 @router.post("/raw", response_model=PredictionResponse)
-async def predict_raw(request: RawFeaturesRequest):
+async def predict_raw(request: RawFeaturesRequest, db: AsyncSession = Depends(get_db)):
     """Predict using raw feature dictionary matching training FEATURE_ORDER.
 
     Example request body:
@@ -532,16 +550,24 @@ async def predict_raw(request: RawFeaturesRequest):
         else:
             risk_level = 'low'
 
-        # Return comprehensive prediction response
-        return PredictionResponse(
+        # Create prediction response
+        result = PredictionResponse(
             risk_level=risk_level,
             risk_score=risk_score,
             dropout_probability=dropout_probability,
             predicted_class=predicted_class,
             risk_factors=[],  # No heuristic factors for raw ML prediction
             recommendations=[], # To be expanded in future versions
-            model_confidence=model_confidence
+            prediction_confidence=model_confidence
         )
+
+        # Save to database (without assessment input for raw endpoint)
+        try:
+            await save_prediction(db, result, None, endpoint="raw")
+        except Exception as db_error:
+            print(f"Database save failed: {db_error}")
+
+        return result
 
     except HTTPException:
         raise

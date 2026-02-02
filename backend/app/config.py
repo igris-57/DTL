@@ -15,6 +15,9 @@ class Settings(BaseSettings):
     # Directory for storing old/backup models
     archived_models_dir: str = "archived_models"
 
+    # Database settings
+    database_url: str = "sqlite+aiosqlite:///./database.db"
+
     # CORS settings
     allowed_origins: list = [
         "http://localhost:3000",
