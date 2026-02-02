@@ -45,3 +45,9 @@ htmlcov/
 # Allow production ML models in saved_models directory
 !backend/ml/saved_models/*.joblib
 backend/database.db
+
+
+
+backend/analyze_features.py
+backend/test_extreme_case.py
+backend/test_override.py
