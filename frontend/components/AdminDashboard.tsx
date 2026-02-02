@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import {
   Users, AlertTriangle, TrendingUp, Activity,
   Search, Bell, ChevronRight, ArrowUpRight, ArrowDownRight,
-  GraduationCap, Calendar, MoreHorizontal,
+  GraduationCap, Calendar, X, Phone, Mail, MapPin, Clock,
   Brain, DollarSign, BookOpen, Heart
 } from 'lucide-react';
 import {
@@ -23,11 +23,67 @@ import {
   type AssessmentSummary
 } from '@/lib/api';
 
-const interventionTypes = [
-  { name: 'Counseling', icon: Brain, color: 'bg-purple-100 text-purple-600' },
-  { name: 'Financial Aid', icon: DollarSign, color: 'bg-green-100 text-green-600' },
-  { name: 'Academic', icon: BookOpen, color: 'bg-blue-100 text-blue-600' },
-  { name: 'Wellness', icon: Heart, color: 'bg-pink-100 text-pink-600' },
+const supportServices = [
+  {
+    id: 'counseling',
+    name: 'Counseling',
+    icon: Brain,
+    color: 'bg-purple-100 text-purple-600',
+    title: 'Student Counseling Services',
+    description: 'Professional counseling and mental health support for students facing academic stress, personal challenges, or emotional difficulties.',
+    contact: {
+      office: 'Dean-Student Affairs Office',
+      phone: '080-68188128',
+      email: 'dean.studentaffairs@rvce.edu.in',
+      location: 'Administration Block, RVCE Campus',
+      hours: 'Mon-Fri: 9 AM - 4 PM, Sat: 9 AM - 1 PM'
+    }
+  },
+  {
+    id: 'financial',
+    name: 'Financial Aid',
+    icon: DollarSign,
+    color: 'bg-green-100 text-green-600',
+    title: 'Scholarships & Financial Aid',
+    description: 'Merit-based scholarships, fee concessions, SC/ST/OBC scholarships, and financial assistance programs for eligible students.',
+    contact: {
+      office: 'Scholarship Cell',
+      phone: '080-68188100',
+      email: 'dean.studentaffairs@rvce.edu.in',
+      location: 'Administration Block, RVCE Campus',
+      hours: 'Mon-Fri: 9 AM - 4 PM'
+    }
+  },
+  {
+    id: 'academic',
+    name: 'Academic Support',
+    icon: BookOpen,
+    color: 'bg-blue-100 text-blue-600',
+    title: 'Academic Mentoring Programme',
+    description: 'Faculty mentorship for academic guidance, study support, and career planning. Connect with your assigned mentor for personalized assistance.',
+    contact: {
+      office: 'Academic Student Services',
+      phone: '080-68188135',
+      email: 'academics@rvce.edu.in',
+      location: 'Department Office',
+      hours: 'Mon-Fri: 9 AM - 4 PM'
+    }
+  },
+  {
+    id: 'wellness',
+    name: 'Wellness',
+    icon: Heart,
+    color: 'bg-pink-100 text-pink-600',
+    title: 'Student Wellness & Health',
+    description: 'Health centre services, wellness programs, and support for physical and mental well-being of students.',
+    contact: {
+      office: 'RVCE Health Centre',
+      phone: '080-68188100',
+      email: 'dean.studentaffairs@rvce.edu.in',
+      location: 'Health Centre, RVCE Campus',
+      hours: 'Mon-Sat: 8 AM - 6 PM'
+    }
+  },
 ];
 
 export default function AdminDashboard() {
@@ -38,12 +94,13 @@ export default function AdminDashboard() {
   const [recentAssessments, setRecentAssessments] = useState<AssessmentSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedService, setSelectedService] = useState<typeof supportServices[0] | null>(null);
 
-  // Fetch dashboard data on mount
+  // Fetch dashboard data on mount and auto-refresh every 30 seconds
   useEffect(() => {
-    async function fetchDashboardData() {
+    async function fetchDashboardData(isInitialLoad = false) {
       try {
-        setLoading(true);
+        if (isInitialLoad) setLoading(true);
         setError(null);
 
         const [statsData, trendsData, riskFactorsData, assessmentsData] = await Promise.all([
@@ -59,13 +116,24 @@ export default function AdminDashboard() {
         setRecentAssessments(assessmentsData);
       } catch (err) {
         console.error('Failed to fetch dashboard data:', err);
-        setError('Failed to load dashboard data. Please try again later.');
+        if (isInitialLoad) {
+          setError('Failed to load dashboard data. Please try again later.');
+        }
       } finally {
-        setLoading(false);
+        if (isInitialLoad) setLoading(false);
       }
     }
 
-    fetchDashboardData();
+    // Initial fetch
+    fetchDashboardData(true);
+
+    // Auto-refresh every 30 seconds
+    const refreshInterval = setInterval(() => {
+      fetchDashboardData(false);
+    }, 30000);
+
+    // Cleanup on unmount
+    return () => clearInterval(refreshInterval);
   }, []);
 
   // Loading state
@@ -117,22 +185,7 @@ export default function AdminDashboard() {
               <h1 className="text-2xl font-semibold text-gray-900">Welcome, Admin</h1>
               <p className="text-gray-500 text-sm">Your student retention dashboard overview</p>
             </div>
-          </div>
 
-          <div className="flex items-center gap-4">
-            <div className="hidden md:flex items-center gap-2 bg-white rounded-2xl px-4 py-3 shadow-sm border border-gray-100 w-64">
-              <Search className="w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search"
-                className="bg-transparent outline-none text-sm flex-1 text-gray-600"
-              />
-            </div>
-
-            <button className="w-12 h-12 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center hover:bg-gray-50 transition-colors relative">
-              <Bell className="w-5 h-5 text-gray-600" />
-              <span className="absolute top-3 right-3 w-2 h-2 bg-red-500 rounded-full"></span>
-            </button>
           </div>
         </div>
 
@@ -146,11 +199,8 @@ export default function AdminDashboard() {
               animate={{ opacity: 1, y: 0 }}
               className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100"
             >
-              <div className="flex items-center justify-between mb-6">
+              <div className="mb-6">
                 <h3 className="font-semibold text-gray-900">Overview</h3>
-                <button className="text-gray-400 hover:text-gray-600">
-                  <MoreHorizontal className="w-5 h-5" />
-                </button>
               </div>
 
               <div className="flex justify-center mb-4">
@@ -202,24 +252,21 @@ export default function AdminDashboard() {
               transition={{ delay: 0.1 }}
               className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100"
             >
-              <div className="flex items-center justify-between mb-4">
+              <div className="mb-4">
                 <h3 className="font-semibold text-gray-900">Support Services</h3>
-                <span className="text-xs text-gray-500">4 active</span>
               </div>
 
               <div className="flex gap-3">
-                {interventionTypes.map((type, i) => (
+                {supportServices.map((service) => (
                   <div
-                    key={i}
-                    className={`w-12 h-12 rounded-2xl ${type.color} flex items-center justify-center cursor-pointer hover:scale-110 transition-transform`}
-                    title={type.name}
+                    key={service.id}
+                    onClick={() => setSelectedService(service)}
+                    className={`w-12 h-12 rounded-2xl ${service.color} flex items-center justify-center cursor-pointer hover:scale-110 transition-transform`}
+                    title={service.name}
                   >
-                    <type.icon className="w-5 h-5" />
+                    <service.icon className="w-5 h-5" />
                   </div>
                 ))}
-                <div className="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors">
-                  <MoreHorizontal className="w-5 h-5 text-gray-500" />
-                </div>
               </div>
             </motion.div>
           </div>
@@ -278,16 +325,9 @@ export default function AdminDashboard() {
               transition={{ delay: 0.3 }}
               className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100"
             >
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h3 className="font-semibold text-gray-900">Risk Trends</h3>
-                  <p className="text-gray-500 text-sm">Student risk analytics</p>
-                </div>
-                <select className="bg-gray-100 rounded-xl px-4 py-2 text-sm text-gray-600 border-0 outline-none cursor-pointer">
-                  <option>Last month</option>
-                  <option>Last quarter</option>
-                  <option>Last year</option>
-                </select>
+              <div className="mb-6">
+                <h3 className="font-semibold text-gray-900">Risk Trends</h3>
+                <p className="text-gray-500 text-sm">Student risk analytics</p>
               </div>
 
               <div className="h-64">
@@ -295,12 +335,12 @@ export default function AdminDashboard() {
                   <AreaChart data={trends}>
                     <defs>
                       <linearGradient id="colorHigh" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#f87171" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#f87171" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="#f87171" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#f87171" stopOpacity={0} />
                       </linearGradient>
                       <linearGradient id="colorLow" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
@@ -362,16 +402,13 @@ export default function AdminDashboard() {
               transition={{ delay: 0.2 }}
               className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100"
             >
-              <div className="flex items-center justify-between mb-6">
+              <div className="mb-6">
                 <h3 className="font-semibold text-gray-900">Recent Cases</h3>
-                <button className="text-gray-400 hover:text-gray-600">
-                  <Calendar className="w-5 h-5" />
-                </button>
               </div>
 
               <div className="space-y-4">
                 {recentAssessments.map((item) => (
-                  <div key={item.id} className="flex items-center gap-3 group cursor-pointer">
+                  <div key={item.id} className="flex items-center gap-3">
                     <div className="text-right min-w-[70px]">
                       <p className="text-xs text-gray-500">{item.date}</p>
                       <p className="text-xs font-medium text-gray-700">{item.time}</p>
@@ -379,21 +416,17 @@ export default function AdminDashboard() {
                     <div className="flex-1">
                       <p className="font-medium text-gray-900 text-sm">{item.name}</p>
                       <div className="flex items-center gap-2">
-                        <span className={`w-2 h-2 rounded-full ${
-                          item.risk === 'high' ? 'bg-red-400' :
+                        <span className={`w-2 h-2 rounded-full ${item.risk === 'high' ? 'bg-red-400' :
                           item.risk === 'medium' ? 'bg-amber-400' : 'bg-green-400'
-                        }`}></span>
+                          }`}></span>
                         <span className="text-xs text-gray-500">{item.type}</span>
                       </div>
                     </div>
-                    <ArrowUpRight className="w-4 h-4 text-gray-300 group-hover:text-gray-600 transition-colors" />
                   </div>
                 ))}
               </div>
 
-              <button className="w-full mt-4 text-sm text-gray-500 hover:text-gray-700 flex items-center justify-center gap-1">
-                See all cases <ChevronRight className="w-4 h-4" />
-              </button>
+
             </motion.div>
 
             <motion.div
@@ -434,6 +467,73 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Service Details Modal */}
+      {selectedService && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={() => setSelectedService(null)}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="bg-white rounded-3xl max-w-md w-full p-6 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className={`w-12 h-12 rounded-2xl ${selectedService.color} flex items-center justify-center`}>
+                  <selectedService.icon className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900">{selectedService.title}</h2>
+                  <p className="text-sm text-gray-500">{selectedService.name}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedService(null)}
+                className="text-gray-400 hover:text-gray-600 p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <p className="text-gray-600 mb-6">{selectedService.description}</p>
+
+            <div className="space-y-3">
+              <div className="flex items-center gap-3 text-sm">
+                <MapPin className="w-4 h-4 text-gray-400" />
+                <div>
+                  <p className="font-medium text-gray-900">{selectedService.contact.office}</p>
+                  <p className="text-gray-500">{selectedService.contact.location}</p>
+                </div>
+              </div>
+
+              <a
+                href={`tel:${selectedService.contact.phone}`}
+                className="flex items-center gap-3 text-sm p-3 rounded-xl bg-green-50 hover:bg-green-100 transition-colors"
+              >
+                <Phone className="w-4 h-4 text-green-600" />
+                <span className="font-medium text-green-700">{selectedService.contact.phone}</span>
+              </a>
+
+              <a
+                href={`mailto:${selectedService.contact.email}`}
+                className="flex items-center gap-3 text-sm p-3 rounded-xl bg-blue-50 hover:bg-blue-100 transition-colors"
+              >
+                <Mail className="w-4 h-4 text-blue-600" />
+                <span className="font-medium text-blue-700">{selectedService.contact.email}</span>
+              </a>
+
+              <div className="flex items-center gap-3 text-sm text-gray-500">
+                <Clock className="w-4 h-4" />
+                <span>{selectedService.contact.hours}</span>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
