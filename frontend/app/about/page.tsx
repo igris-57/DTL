@@ -27,19 +27,12 @@ export default function AboutPage() {
   const currentFeatures = [
     'ML-based dropout risk prediction using Gradient Boosting (87.8% accuracy, 0.9211 AUC-ROC)',
     'Multi-factor assessment covering academic, mental, and financial indicators',
-    'Personalized support recommendations with urgency levels',
-    'Admin analytics dashboard with trend visualization',
-    'Privacy-first approach with explicit consent collection',
     'Real-time risk scoring with model confidence display',
-  ];
-
-  const futureScope = [
-    { title: 'College ERP Integration', description: 'Connect with institutional databases for automatic data collection' },
-    { title: 'Multi-Stakeholder Views', description: 'Dedicated dashboards for Faculty, Counsellors, and Administration' },
-    { title: 'Automated Alerts', description: 'Email and SMS notifications for high-risk students and support staff' },
-    { title: 'Periodic Reassessment', description: 'Track student progress over time with scheduled check-ins' },
-    { title: 'Continuous Model Improvement', description: 'Fine-tune ML model with real institutional data' },
-    { title: 'Mobile Application', description: 'Native apps for iOS and Android for easier access' },
+    'Admin analytics dashboard with auto-refresh every 30 seconds',
+    'Interactive risk trends chart with weekly data visualization',
+    'Integrated RVCE Support Services with real contact information',
+    'Clickable phone and email links for immediate support access',
+    'Privacy-first approach with honest consent collection',
   ];
 
   return (
@@ -167,33 +160,7 @@ export default function AboutPage() {
           </Card>
         </motion.div>
 
-        {/* Future Scope */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="mb-12"
-        >
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Future Scope</h2>
-          <div className="grid md:grid-cols-2 gap-4">
-            {futureScope.map((item, i) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 + i * 0.1 }}
-              >
-                <Card className="p-4 h-full hover:shadow-lg transition-shadow">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Clock className="w-4 h-4 text-purple-500" />
-                    <h3 className="font-semibold text-gray-900">{item.title}</h3>
-                  </div>
-                  <p className="text-sm text-gray-600">{item.description}</p>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+
 
         {/* Team */}
         <motion.div

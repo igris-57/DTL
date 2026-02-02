@@ -66,7 +66,7 @@ export default function AssessmentForm() {
         return formData.consentGiven && formData.consentDataProcessing;
       case 1: // Academic
         return formData.academicYear && formData.attendance &&
-               formData.overwhelmFrequency && formData.studyHours;
+          formData.overwhelmFrequency && formData.studyHours;
       case 2: // Support
         return formData.advisorInteraction;
       case 3: // Personal
@@ -128,7 +128,7 @@ export default function AssessmentForm() {
                     Office of Student Affairs, RV College of Engineering
                   </p>
                   <p className="text-sm text-gray-600">
-                    In accordance with RVCE Data Protection Policy (Ref: RVCE/DSA/2026/DP-001), this assessment is conducted to identify students who may benefit from additional support services and ensure their academic success.
+                    This assessment is designed to identify students who may benefit from additional support services and help ensure their academic success.
                   </p>
                 </div>
               </div>
@@ -155,7 +155,7 @@ export default function AssessmentForm() {
                     I consent to the assessment *
                   </label>
                   <p className="text-sm text-gray-600 mt-1">
-                    I voluntarily consent to participate in this dropout risk assessment. I understand that my responses will be analyzed using a machine learning model (Gradient Boosting Classifier, 87.8% accuracy) to assess my risk level and generate personalized support recommendations. This assessment is conducted by the Office of Student Affairs for student welfare purposes.
+                    I voluntarily consent to participate in this dropout risk assessment. I understand that my responses will be analyzed using a machine learning model to assess my risk level and generate personalized support recommendations.
                   </p>
                 </div>
               </div>
@@ -173,7 +173,7 @@ export default function AssessmentForm() {
                     I consent to data processing *
                   </label>
                   <p className="text-sm text-gray-600 mt-1">
-                    I authorize RVCE to process my assessment data using automated decision-making systems. All data is encrypted during transmission and storage, maintained on secure RVCE servers, and accessible only to authorized Student Affairs personnel. Data will be retained for a maximum of 24 months or until graduation, whichever is earlier, unless I request earlier deletion.
+                    I authorize the processing of my assessment data. My data will be handled securely and used only for the purpose of generating personalized recommendations.
                   </p>
                 </div>
               </div>
@@ -205,10 +205,9 @@ export default function AssessmentForm() {
                   Data Security
                 </h4>
                 <ul className="text-sm text-gray-700 space-y-1.5">
-                  <li>• AES-256 encryption for data at rest</li>
-                  <li>• TLS 1.3 for data in transit</li>
-                  <li>• Role-based access controls</li>
-                  <li>• Regular security audits</li>
+                  <li>• Secure data handling</li>
+                  <li>• Encrypted transmission</li>
+                  <li>• Access controls in place</li>
                   <li>• No third-party sharing</li>
                 </ul>
               </div>
@@ -217,36 +216,13 @@ export default function AssessmentForm() {
                 <h4 className="font-medium text-gray-900 mb-2">Your Rights</h4>
                 <ul className="text-sm text-gray-700 space-y-1.5">
                   <li>• Withdraw consent at any time</li>
-                  <li>• Request data deletion (GDPR compliant)</li>
+                  <li>• Request data deletion</li>
                   <li>• Access your assessment records</li>
-                  <li>• File privacy concerns</li>
                   <li>• Results remain confidential</li>
                 </ul>
               </div>
             </div>
 
-            {/* Contact Information */}
-            <div className="p-5 bg-gray-50 border border-gray-200 rounded-xl">
-              <h4 className="font-medium text-gray-900 mb-3">Contact & Support</h4>
-              <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-700">
-                <div>
-                  <p className="font-medium text-gray-900 mb-1">Data Protection Officer</p>
-                  <p>Email: dpo@rvce.edu.in</p>
-                  <p>Phone: +91-80-4099-2000 (Ext. 2156)</p>
-                </div>
-                <div>
-                  <p className="font-medium text-gray-900 mb-1">Student Affairs Office</p>
-                  <p>Email: studentaffairs@rvce.edu.in</p>
-                  <p>Office: Administration Block, 2nd Floor</p>
-                </div>
-              </div>
-              <div className="mt-3 pt-3 border-t border-gray-300">
-                <p className="text-xs text-gray-600">
-                  For privacy concerns or to exercise your data rights, contact the Data Protection Officer.
-                  For full policy details, visit: <span className="text-purple-600 font-medium">rvce.edu.in/privacy-policy</span>
-                </p>
-              </div>
-            </div>
 
             {/* Acknowledgment */}
             <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
@@ -270,11 +246,10 @@ export default function AssessmentForm() {
                     key={year}
                     type="button"
                     onClick={() => updateFormData('academicYear', year)}
-                    className={`p-4 rounded-xl border-2 transition-all ${
-                      formData.academicYear === year
-                        ? 'border-purple-500 bg-purple-50 text-purple-700'
-                        : 'border-gray-200 hover:border-purple-300'
-                    }`}
+                    className={`p-4 rounded-xl border-2 transition-all ${formData.academicYear === year
+                      ? 'border-purple-500 bg-purple-50 text-purple-700'
+                      : 'border-gray-200 hover:border-purple-300'
+                      }`}
                   >
                     <span className="font-semibold">{year} Year</span>
                   </button>
@@ -297,11 +272,10 @@ export default function AssessmentForm() {
                     key={option.value}
                     type="button"
                     onClick={() => updateFormData('attendance', option.value)}
-                    className={`p-4 rounded-xl border-2 transition-all ${
-                      formData.attendance === option.value
-                        ? 'border-purple-500 bg-purple-50'
-                        : 'border-gray-200 hover:border-purple-300'
-                    }`}
+                    className={`p-4 rounded-xl border-2 transition-all ${formData.attendance === option.value
+                      ? 'border-purple-500 bg-purple-50'
+                      : 'border-gray-200 hover:border-purple-300'
+                      }`}
                   >
                     <div className="text-2xl mb-1">{option.emoji}</div>
                     <div className="text-sm font-medium">{option.label}</div>
@@ -325,11 +299,10 @@ export default function AssessmentForm() {
                     key={option.value}
                     type="button"
                     onClick={() => updateFormData('overwhelmFrequency', option.value)}
-                    className={`p-4 rounded-xl border-2 transition-all ${
-                      formData.overwhelmFrequency === option.value
-                        ? 'border-purple-500 bg-purple-50'
-                        : 'border-gray-200 hover:border-purple-300'
-                    }`}
+                    className={`p-4 rounded-xl border-2 transition-all ${formData.overwhelmFrequency === option.value
+                      ? 'border-purple-500 bg-purple-50'
+                      : 'border-gray-200 hover:border-purple-300'
+                      }`}
                   >
                     <div className="text-sm font-medium">{option.label}</div>
                   </button>
@@ -346,11 +319,10 @@ export default function AssessmentForm() {
                     key={hours}
                     type="button"
                     onClick={() => updateFormData('studyHours', hours)}
-                    className={`p-4 rounded-xl border-2 transition-all ${
-                      formData.studyHours === hours
-                        ? 'border-purple-500 bg-purple-50'
-                        : 'border-gray-200 hover:border-purple-300'
-                    }`}
+                    className={`p-4 rounded-xl border-2 transition-all ${formData.studyHours === hours
+                      ? 'border-purple-500 bg-purple-50'
+                      : 'border-gray-200 hover:border-purple-300'
+                      }`}
                   >
                     <span className="font-semibold">{hours} hrs</span>
                   </button>
@@ -397,11 +369,10 @@ export default function AssessmentForm() {
                     key={option.value}
                     type="button"
                     onClick={() => updateFormData('advisorInteraction', option.value)}
-                    className={`p-4 rounded-xl border-2 transition-all text-left ${
-                      formData.advisorInteraction === option.value
-                        ? 'border-purple-500 bg-purple-50'
-                        : 'border-gray-200 hover:border-purple-300'
-                    }`}
+                    className={`p-4 rounded-xl border-2 transition-all text-left ${formData.advisorInteraction === option.value
+                      ? 'border-purple-500 bg-purple-50'
+                      : 'border-gray-200 hover:border-purple-300'
+                      }`}
                   >
                     <span className="font-medium">{option.label}</span>
                   </button>
@@ -462,11 +433,10 @@ export default function AssessmentForm() {
                     key={option.value}
                     type="button"
                     onClick={() => updateFormData('employmentStatus', option.value)}
-                    className={`p-4 rounded-xl border-2 transition-all ${
-                      formData.employmentStatus === option.value
-                        ? 'border-purple-500 bg-purple-50'
-                        : 'border-gray-200 hover:border-purple-300'
-                    }`}
+                    className={`p-4 rounded-xl border-2 transition-all ${formData.employmentStatus === option.value
+                      ? 'border-purple-500 bg-purple-50'
+                      : 'border-gray-200 hover:border-purple-300'
+                      }`}
                   >
                     <div className="text-2xl mb-1">{option.emoji}</div>
                     <div className="text-sm font-medium">{option.label}</div>
@@ -490,11 +460,10 @@ export default function AssessmentForm() {
                     key={option.value}
                     type="button"
                     onClick={() => updateFormData('financialStress', option.value)}
-                    className={`p-4 rounded-xl border-2 transition-all ${
-                      formData.financialStress === option.value
-                        ? 'border-purple-500 bg-purple-50'
-                        : 'border-gray-200 hover:border-purple-300'
-                    }`}
+                    className={`p-4 rounded-xl border-2 transition-all ${formData.financialStress === option.value
+                      ? 'border-purple-500 bg-purple-50'
+                      : 'border-gray-200 hover:border-purple-300'
+                      }`}
                   >
                     <span className="text-sm font-medium">{option.label}</span>
                   </button>
@@ -555,11 +524,10 @@ export default function AssessmentForm() {
                         }
                       }
                     }}
-                    className={`p-4 rounded-xl border-2 transition-all ${
-                      formData.servicesUsed.includes(option.value)
-                        ? 'border-purple-500 bg-purple-50'
-                        : 'border-gray-200 hover:border-purple-300'
-                    }`}
+                    className={`p-4 rounded-xl border-2 transition-all ${formData.servicesUsed.includes(option.value)
+                      ? 'border-purple-500 bg-purple-50'
+                      : 'border-gray-200 hover:border-purple-300'
+                      }`}
                   >
                     <div className="text-2xl mb-1">{option.emoji}</div>
                     <div className="text-sm font-medium">{option.label}</div>
@@ -580,11 +548,10 @@ export default function AssessmentForm() {
                     key={String(option.value)}
                     type="button"
                     onClick={() => updateFormData('withdrawalConsidered', option.value)}
-                    className={`p-4 rounded-xl border-2 transition-all ${
-                      formData.withdrawalConsidered === option.value
-                        ? 'border-purple-500 bg-purple-50'
-                        : 'border-gray-200 hover:border-purple-300'
-                    }`}
+                    className={`p-4 rounded-xl border-2 transition-all ${formData.withdrawalConsidered === option.value
+                      ? 'border-purple-500 bg-purple-50'
+                      : 'border-gray-200 hover:border-purple-300'
+                      }`}
                   >
                     <div className="text-2xl mb-1">{option.emoji}</div>
                     <div className="text-sm font-medium">{option.label}</div>
@@ -621,11 +588,10 @@ export default function AssessmentForm() {
                           updateFormData('withdrawalReasons', [...current, reason]);
                         }
                       }}
-                      className={`p-3 rounded-xl border-2 transition-all text-sm ${
-                        formData.withdrawalReasons.includes(reason)
-                          ? 'border-purple-500 bg-purple-50'
-                          : 'border-gray-200 hover:border-purple-300'
-                      }`}
+                      className={`p-3 rounded-xl border-2 transition-all text-sm ${formData.withdrawalReasons.includes(reason)
+                        ? 'border-purple-500 bg-purple-50'
+                        : 'border-gray-200 hover:border-purple-300'
+                        }`}
                     >
                       {reason}
                     </button>

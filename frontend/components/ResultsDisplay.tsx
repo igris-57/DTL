@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import {
   AlertTriangle, CheckCircle, AlertCircle, Phone, Mail,
-  RefreshCw, Info, Shield
+  RefreshCw, Info, Shield, MapPin, Clock, Brain, DollarSign, BookOpen, Heart
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -140,53 +140,6 @@ export default function ResultsDisplay() {
           </motion.div>
         )}
 
-        {/* Recommendations */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="mb-8"
-        >
-          <h3 className="text-xl font-semibold mb-4">Personalized Support Recommendations</h3>
-          <div className="grid md:grid-cols-2 gap-4">
-            {prediction.recommendations.map((rec, i) => {
-              const typeInfo = supportTypeInfo[rec.type] || { icon: '📋', color: 'from-gray-500 to-gray-600' };
-
-              return (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 + i * 0.1 }}
-                  whileHover={{ y: -5 }}
-                >
-                  <Card className="p-6 h-full hover:shadow-xl transition-all cursor-pointer group">
-                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${typeInfo.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                      <span className="text-2xl">{typeInfo.icon}</span>
-                    </div>
-
-                    <div className="flex items-center gap-2 mb-2">
-                      <h4 className="font-semibold text-gray-900">{rec.title}</h4>
-                      <Badge variant={rec.urgency === 'immediate' ? 'destructive' : rec.urgency === 'soon' ? 'default' : 'secondary'} className="capitalize">
-                        {rec.urgency}
-                      </Badge>
-                    </div>
-
-                    <p className="text-gray-600 text-sm mb-4">{rec.description}</p>
-
-                    {rec.contact && (
-                      <div className="flex items-center gap-2 text-purple-600">
-                        <Mail className="w-4 h-4" />
-                        <span className="text-sm">{rec.contact}</span>
-                      </div>
-                    )}
-                  </Card>
-                </motion.div>
-              );
-            })}
-          </div>
-        </motion.div>
-
         {/* Privacy Note */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -207,6 +160,93 @@ export default function ResultsDisplay() {
           </Card>
         </motion.div>
 
+        {/* RVCE Support Services */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.85 }}
+          className="mb-8"
+        >
+          <h3 className="text-xl font-semibold mb-4">RVCE Support Services</h3>
+          <div className="grid md:grid-cols-2 gap-4">
+            {/* Counseling */}
+            <Card className="p-5 hover:shadow-lg transition-shadow">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center flex-shrink-0">
+                  <Brain className="w-6 h-6 text-purple-600" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-semibold text-gray-900">Student Counseling</h4>
+                  <p className="text-sm text-gray-500 mb-2">Dean-Student Affairs Office</p>
+                  <a href="tel:080-68188128" className="flex items-center gap-2 text-sm text-green-600 hover:underline">
+                    <Phone className="w-4 h-4" /> 080-68188128
+                  </a>
+                  <a href="mailto:dean.studentaffairs@rvce.edu.in" className="flex items-center gap-2 text-sm text-blue-600 hover:underline mt-1">
+                    <Mail className="w-4 h-4" /> dean.studentaffairs@rvce.edu.in
+                  </a>
+                </div>
+              </div>
+            </Card>
+
+            {/* Financial Aid */}
+            <Card className="p-5 hover:shadow-lg transition-shadow">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
+                  <DollarSign className="w-6 h-6 text-green-600" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-semibold text-gray-900">Scholarships & Financial Aid</h4>
+                  <p className="text-sm text-gray-500 mb-2">Scholarship Cell</p>
+                  <a href="tel:080-68188100" className="flex items-center gap-2 text-sm text-green-600 hover:underline">
+                    <Phone className="w-4 h-4" /> 080-68188100
+                  </a>
+                  <a href="mailto:dean.studentaffairs@rvce.edu.in" className="flex items-center gap-2 text-sm text-blue-600 hover:underline mt-1">
+                    <Mail className="w-4 h-4" /> dean.studentaffairs@rvce.edu.in
+                  </a>
+                </div>
+              </div>
+            </Card>
+
+            {/* Academic Support */}
+            <Card className="p-5 hover:shadow-lg transition-shadow">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0">
+                  <BookOpen className="w-6 h-6 text-blue-600" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-semibold text-gray-900">Academic Mentoring</h4>
+                  <p className="text-sm text-gray-500 mb-2">Academic Student Services</p>
+                  <a href="tel:080-68188135" className="flex items-center gap-2 text-sm text-green-600 hover:underline">
+                    <Phone className="w-4 h-4" /> 080-68188135
+                  </a>
+                  <a href="mailto:academics@rvce.edu.in" className="flex items-center gap-2 text-sm text-blue-600 hover:underline mt-1">
+                    <Mail className="w-4 h-4" /> academics@rvce.edu.in
+                  </a>
+                </div>
+              </div>
+            </Card>
+
+            {/* Wellness */}
+            <Card className="p-5 hover:shadow-lg transition-shadow">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-pink-100 flex items-center justify-center flex-shrink-0">
+                  <Heart className="w-6 h-6 text-pink-600" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-semibold text-gray-900">Wellness & Health Centre</h4>
+                  <p className="text-sm text-gray-500 mb-2">RVCE Health Centre</p>
+                  <a href="tel:080-68188100" className="flex items-center gap-2 text-sm text-green-600 hover:underline">
+                    <Phone className="w-4 h-4" /> 080-68188100
+                  </a>
+                  <p className="flex items-center gap-2 text-sm text-gray-500 mt-1">
+                    <Clock className="w-4 h-4" /> Mon-Sat: 8 AM - 6 PM
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </motion.div>
+
         {/* Actions */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -225,6 +265,7 @@ export default function ResultsDisplay() {
           <Button
             size="lg"
             className="bg-gradient-to-r from-purple-600 to-indigo-600"
+            onClick={() => window.location.href = 'tel:080-68188128'}
           >
             <Phone className="w-4 h-4 mr-2" />
             Contact Support
